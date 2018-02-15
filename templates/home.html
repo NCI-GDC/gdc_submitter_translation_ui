@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  <div class="jumbotron text-center">
+    <h1>GDC Translation User Interface</h1>
+    <p class="lead">This application is to help GDC user map fields to GDC submission template.</p>
+  </div>
+  <h4>Upload File</h4>
+  <br>
+  <form method=post enctype=multipart/form-data>
+    <p><input type=file name=file>
+       <input type=submit value=Upload>
+  <small id="fileHelp" class="form-text text-muted">A .csv or .json file is allowed.</small>
+{% endblock %}
