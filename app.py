@@ -36,7 +36,7 @@ def home():
     form = InputForm(request.form)
     if request.method == 'POST' and form.validate():
         content = str(form['inputform']).rsplit('>')[1].rsplit('<')[0]
-        flash('File uploaded', 'success')
+        flash('Content uploaded', 'success')
         return redirect(url_for('upload', content=content))
     if request.method == 'POST':
         if 'file' not in request.files:
