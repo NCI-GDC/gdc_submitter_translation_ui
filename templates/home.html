@@ -4,19 +4,6 @@
   <div class="jumbotron text-center">
     <h1>GDC Translation User Interface</h1>
     <p class="lead">This application is to help GDC user map fields to GDC submission template.</p>
+    <a href="/upload" class="btn btn-success btn-lg" role="button" aria-pressed="true">Get start!</a>
   </div>
-  <h4>Upload File</h4>
-  <br>
-  <form method="POST" enctype=multipart/form-data>
-    <p><input type=file name=file>
-       <input type=submit value=Upload>
-  <small id="fileHelp" class="form-text text-muted">A .csv or .json file is allowed.</small>
-  <br>
-  {% from "includes/_formhelpers.html" import render_field %}
-  <form method="POST" action="">
-    <div class="form-group">
-      {{ render_field(form.inputform, class_="form-control") }}
-    </div>
-    <p><input type="submit" class="btn btn-primary" value="Submit"></p>
-  </form>
 {% endblock %}

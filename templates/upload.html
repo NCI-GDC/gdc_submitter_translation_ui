@@ -1,5 +1,24 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <p>{{ content }}</p>
+<div class="jumbotron text-left">
+  <form class="form-group" method="POST" enctype="multipart/form-data" action="{{ url_for('mapping') }}">
+    <label for="comp_select">Select desired node type</label>
+    <select name="comp_select" class="form-control">
+      {% for key in node_list %}
+      <option value="{{ key }}">{{ key }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <label for="uploadFile">Upload your related input</label>
+    <br>
+    <input name="uploadFile" type="file" class="btn btn-outline-info btn-sm">
+    <input type="submit" value="Upload" class="btn btn-outline-info">
+  <small id="fileHelp" class="form-text text-muted">Only .csv file is allowed.</small>
+  </form>
+</div>
+<div class="btn-group btn-group-justified fixed-bottom">
+  <a href="/upload" class="btn btn-info btn-block">Upload your fields</a>
+  <a href="/mapping" class="btn btn-outline-primary">Map to GDC</a>
+</div>
 {% endblock %}
