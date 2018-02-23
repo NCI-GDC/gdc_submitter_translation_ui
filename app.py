@@ -3,10 +3,10 @@
 flask playground
 """
 
-import json
+import random
+import string
 import requests as rq
-from flask import Flask, render_template, request, flash, redirect, url_for
-from wtforms import Form, TextAreaField, validators
+from flask import Flask, render_template, request, flash
 
 def file_extention(filename):
     """
@@ -47,23 +47,23 @@ def mapping():
     """
     step 2
     """
-    selected_node = str(request.form.get('comp_select'))
-    selected_url = 'https://api.gdc.cancer.gov/v0/submission/_dictionary/{}'.format(selected_node)
-    propertyList = []
-    selected_json = rq.get(selected_url).json()
-    for key, value in selected_json.items():
+    snode = str(request.form.get('comp_select'))
+    surl = 'https://api.gdc.cancer.gov/v0/submission/_dictionary/{}'.format(snode)
+    plist = []
+    sjson = rq.get(surl).json()
+    for key, value in sjson.items():
         if not key.startswith('$'):
-            propertyList.append(key)
+            plist.append(key)
     file = request.files['uploadFile']
     if file_extention(file.filename) == 'csv':
         header = file.read().decode("utf-8").strip().split('\n')[0]
         flash('File uploaded', 'success')
     else:
         flash('Not a valid file format', 'danger')
-        return render_template('mapping.html', selected_node=selected_node, propertyList=["None"], header="None")
-    return render_template('mapping.html', selected_node=selected_node, propertyList=propertyList, header=header)
+        return render_template('mapping.html', selected_node=snode, property_list=[""], header="")
+    return render_template('mapping.html', selected_node=snode, property_list=plist, header=header)
 
 
 if __name__ == '__main__':
-    APP.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+    APP.secret_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
     APP.run(debug=True)
