@@ -1,0 +1,33 @@
+
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="jumbotron text-left">
+  <hr>
+  <table class="table table-bordered table-sm">
+    <tr>
+      <th>Expected keys for {{ selected_node }} in GDC api</th>
+      <th>Header from your input</th>
+    </tr>
+    {% for key in property_list %}
+      <tr>
+        <td>{{ key }}</td>
+        <td>
+          <select name="field_select" class="form-control">
+            {% set fieldList = header.split(',') %}
+              {% for field in fieldList %}
+                <option value="{{ field }}">{{ field }}</option>
+              {% endfor %}
+          </select>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+<br>
+<br>
+<div class="btn-group btn-group-justified fixed-bottom">
+ <a href="/upload" class="btn btn-outline-info">Upload your fields</a>
+ <a href="/mapping" class="btn btn-primary btn-block">Map to GDC</a>
+</div>
+{% endblock %}
