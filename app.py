@@ -36,10 +36,7 @@ def upload():
     step 1
     """
     all_node_type = rq.get('https://api.gdc.cancer.gov/v0/submission/_dictionary/_all').json()
-    node_list = []
-    for key, value in all_node_type.items():
-        if not key.startswith('_'):
-            node_list.append(key)
+    node_list = list(x for x in all_node_type.keys() if not x.startswith('_'))
     return render_template('upload.html', node_list=node_list)
 
 @APP.route('/mapping', methods=['GET', 'POST'])
@@ -49,20 +46,40 @@ def mapping():
     """
     snode = str(request.form.get('comp_select'))
     surl = 'https://api.gdc.cancer.gov/v0/submission/_dictionary/{}'.format(snode)
-    plist = []
+    #import pdb; pdb.set_trace()
+    rplist = rq.get(surl).json()['required']
     sjson = rq.get(surl).json()
-    for key, value in sjson.items():
-        if not key.startswith('$'):
-            plist.append(key)
+    plist = list(sjson['properties'].keys())
+    oplist = [x for x in plist if x not in rplist]
     file = request.files['uploadFile']
     if file_extention(file.filename) == 'csv':
         header = file.read().decode("utf-8").strip().split('\n')[0]
-        flash('File uploaded', 'success')
+        flash('File uploaded, you have selected \"{}\"'.format(snode), 'success')
     else:
         flash('Not a valid file format', 'danger')
-        return render_template('mapping.html', selected_node=snode, property_list=[""], header="")
-    return render_template('mapping.html', selected_node=snode, property_list=plist, header=header)
+        return render_template('mapping.html', selected_node=snode, required_list=[""], optional_list=[""], header="")
+    return render_template('mapping.html', selected_node=snode, required_list=rplist, optional_list=oplist, header=header)
 
+@APP.route('/output', methods=['GET', 'POST'])
+def output():
+    """
+    step 3
+    """
+    user_dict = request.form.to_dict()
+    temp_str = """
+    {FIELDNAME_IN_THE_NODE}:
+        type: {TYPE}
+        fieldname:
+            - {FIELDNAME_IN_THE_CSV}
+    """
+    yaml_str = ""
+    for key, value in user_dict.items():
+        yaml_str += temp_str.format(
+            FIELDNAME_IN_THE_NODE=key,
+            TYPE="string",
+            FIELDNAME_IN_THE_CSV=value
+        )
+    return render_template('output.html', data=yaml_str)
 
 if __name__ == '__main__':
     APP.secret_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))

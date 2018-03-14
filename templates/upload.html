@@ -11,14 +11,17 @@
     </select>
     <br>
     <label for="uploadFile">Upload your related input</label>
-    <br>
-    <input name="uploadFile" type="file" class="btn btn-outline-info btn-sm">
-    <input type="submit" value="Upload" class="btn btn-outline-info">
-  <small id="fileHelp" class="form-text text-muted">Only .csv file is allowed.</small>
+      <div class="custom-file" id="uploadFile" lang="es">
+          <input name="uploadFile" type="file" class="custom-file-input" id="uploadFile" aria-describedby="fileHelp" onchange="$(this).next().after().text($(this).val().split('\\').slice(-1)[0])" required>
+          <label class="custom-file-label" for="uploadFile">Select file...</label>
+      </div>
+    <small id="fileHelp" class="form-text text-muted text-right">Only .csv file is allowed.</small>
+    <input type="submit" value="Upload" class="btn btn-outline-success">
   </form>
 </div>
 <div class="btn-group btn-group-justified fixed-bottom">
-  <a href="/upload" class="btn btn-info btn-block">Upload your fields</a>
-  <a href="/mapping" class="btn btn-outline-primary">Map to GDC</a>
+  <a href="/upload" class="btn btn-success btn-block">Upload your fields</a>
+  <button type="button" class="btn btn-outline-info" disabled>Map to GDC</button>
+  <button type="button" class="btn btn-outline-primary" disabled>Get your output</button>
 </div>
 {% endblock %}

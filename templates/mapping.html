@@ -3,31 +3,55 @@
 
 {% block body %}
 <div class="jumbotron text-left">
-  <hr>
-  <table class="table table-bordered table-sm">
-    <tr>
-      <th>Expected keys for {{ selected_node }} in GDC api</th>
-      <th>Header from your input</th>
-    </tr>
-    {% for key in property_list %}
-      <tr>
-        <td>{{ key }}</td>
-        <td>
-          <select name="field_select" class="form-control">
-            {% set fieldList = header.split(',') %}
-              {% for field in fieldList %}
-                <option value="{{ field }}">{{ field }}</option>
-              {% endfor %}
-          </select>
-        </td>
-      </tr>
+  <form action="{{ url_for('output') }}" method="POST">
+    <div class="form-group row">
+      <label for="rq_header" class="col-sm-5 col-form-label">Required for <code>{{ selected_node }}</code> :</label>
+      <div class="form-group col-sm-7">
+        <input type="text" readonly class="form-control-plaintext" id="rq_header" value="Header from your input">
+      </div>
+    </div>
+    {% for rk in required_list %}
+    <div class="form-group row">
+      <label for="{{ rk }}" class="col-sm-5 col-form-label"><kbd>{{ rk }}</kbd></label>
+      <div class="form-group col-sm-7">
+        <select name="{{ rk }}" class="form-control">
+          <option value="not_defined">not_defined</option>
+          {% set fieldList = header.split(',') %}
+            {% for field in fieldList %}
+              <option value="{{ field }}">{{ field }}</option>
+            {% endfor %}
+        </select>
+      </div>
+    </div>
     {% endfor %}
-  </table>
+    <div class="form-group row">
+      <label for="op_header" class="col-sm-5 col-form-label">Optional for <code>{{ selected_node }}</code> :</label>
+      <div class="form-group col-sm-7">
+        <input type="text" readonly class="form-control-plaintext" id="op_header" value="">
+      </div>
+    </div>
+    {% for ok in optional_list %}
+    <div class="form-group row">
+      <label for="{{ ok }}" class="col-sm-5 col-form-label"><kbd>{{ ok }}</kbd></label>
+      <div class="form-group col-sm-7">
+        <select name="{{ ok }}" class="form-control">
+          <option value="not_defined">not_defined</option>
+          {% set fieldList = header.split(',') %}
+            {% for field in fieldList %}
+              <option value="{{ field }}">{{ field }}</option>
+            {% endfor %}
+        </select>
+      </div>
+    </div>
+    {% endfor %}
+    <input type="submit" value="Map" class="btn btn-outline-info">
+  </form>
 </div>
 <br>
 <br>
 <div class="btn-group btn-group-justified fixed-bottom">
- <a href="/upload" class="btn btn-outline-info">Upload your fields</a>
- <a href="/mapping" class="btn btn-primary btn-block">Map to GDC</a>
+  <a href="/upload" class="btn btn-outline-success">Upload your fields</a>
+  <button type="button" class="btn btn-info btn-block">Map to GDC</button>
+  <button type="button" class="btn btn-outline-primary" disabled>Get your output</button>
 </div>
 {% endblock %}
