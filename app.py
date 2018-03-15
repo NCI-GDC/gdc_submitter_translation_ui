@@ -5,8 +5,13 @@ flask playground
 
 import random
 import string
+import yaml
 import requests as rq
 from flask import Flask, render_template, request, flash
+
+class MyDumper(yaml.Dumper):
+    def increase_indent(self, flow=False, indentless=False):
+        return super(MyDumper, self).increase_indent(flow, False)
 
 def file_extention(filename):
     """
@@ -79,7 +84,8 @@ def output():
             TYPE="string",
             FIELDNAME_IN_THE_CSV=value
         )
-    return render_template('output.html', data=yaml_str)
+    yaml_style = yaml.dump(yaml.load(yaml_str), Dumper=MyDumper, indent=4, default_flow_style=False)
+    return render_template('output.html', data=yaml_style)
 
 if __name__ == '__main__':
     APP.secret_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
