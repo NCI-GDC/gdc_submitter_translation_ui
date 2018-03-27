@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="jumbotron text-left">
-  <form action="{{ url_for('output') }}" method="POST">
+  <form action="{{ url_for('output', snode=selected_node) }}" method="POST">
     <table class="table table-sm" id="mappingTable">
       <tr>
         <th>Required for <code>{{ selected_node }}</code> :</th>
@@ -35,6 +35,35 @@
           <td>
             <div class="form-group">
               <select name="{{ ok }}" class="form-control">
+                <option disabled selected value="">select from your header</option>
+                <option value="not_defined">not_defined</option>
+                {% set fieldList = header.split(',') %}
+                  {% for field in fieldList %}
+                    <option value="{{ field }}">{{ field }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+          </td>
+          <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <th>Optional exclusive fields for <code>{{ selected_node }}</code> :</th>
+        <th></th>
+      </tr>
+      {% for ek in exclusive_list %}
+      <tr>
+          <td>
+            <div class="form-group">
+              <select name="exclusive_field_{{ loop.index }}" class="form-control">
+                {% for field in ek %}
+                  <option value="{{ field }}">{{ field }}</option>
+                {% endfor %}
+              </select>
+          </td>
+          <td>
+            <div class="form-group">
+              <select name="exclusive_chosen_{{ loop.index }}" class="form-control">
                 <option disabled selected value="">select from your header</option>
                 <option value="not_defined">not_defined</option>
                 {% set fieldList = header.split(',') %}
