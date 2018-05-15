@@ -1,5 +1,4 @@
-#!/Users/Li/virtualenvs/p3/bin/python
-# pylint: disable=C0301, C0103, R0901
+# pylint: disable=C0301, C0103, E0611, E0401
 
 """
 flask playground
@@ -11,41 +10,10 @@ import yaml
 import requests as rq
 from flask import Flask, render_template, request, flash
 
-class MyDumper(yaml.Dumper):
-    """
-    customize indent dumper
-    """
-    def increase_indent(self, flow=False, indentless=False):
-        return super(MyDumper, self).increase_indent(flow, False)
+import utils.input as input_utils
+from utils.output import MyDumper
 
-def file_extention(filename):
-    """
-    check ext
-    """
-    return '.' in filename and filename.rsplit('.', 1)[1].lower()
 
-def get_fields(node=None):
-    """
-    check template
-    """
-    surl = 'https://api.gdc.cancer.gov/v0/submission/_dictionary/{}'.format(node)
-    sdict = rq.get(surl).json()
-    rqlist = []
-    if sdict.get('required'):
-        rqlist = sdict['required']
-    stemp = 'https://api.gdc.cancer.gov/v0/submission/template/{}?format=json'.format(str(node))
-    tplist = list(rq.get(stemp).json().keys())
-    required = [x for x in rqlist if x in tplist]
-    oplist = [y for y in tplist if y not in rqlist]
-    exclusive_pairs = []
-    if sdict.get('links'):
-        for pair in sdict['links']:
-            if pair.get('exclusive'):
-                if pair['exclusive'] is True:
-                    exclusive_pairs.append([d['name'] for d in pair['subgroup']])
-    dup = [i for j in exclusive_pairs for i in j]
-    optional = [z for z in oplist if z not in dup]
-    return (required, optional, exclusive_pairs)
 
 def save_type(dct=None):
     """
@@ -104,11 +72,13 @@ def get_yaml(user_dict=None, yaml_str=None, nodejson=None):
             - {FIELDNAME_IN_THE_CSV}
     """
     trans_type = {
+        ('string',): 'string',
         ('string', 'null'): 'string',
         'array': 'list',
         'string': 'string',
         'number': 'int',
-        'null': 'null'
+        'null': 'null',
+        'integer': 'int'
     }
     for key, value in user_dict.items():
         stype = []
@@ -125,13 +95,18 @@ def get_yaml(user_dict=None, yaml_str=None, nodejson=None):
         else:
             yaml_str += temp_str.format(
                 FIELDNAME_IN_THE_NODE=key,
-                TYPE="string",
+                TYPE=["string"],
                 FIELDNAME_IN_THE_CSV=value
             )
     return yaml_str
 
 
 app = Flask(__name__)
+
+gdc_submission_api = 'https://api.gdc.cancer.gov/v0/submission/_dictionary/'
+gdc_submission_template = 'https://api.gdc.cancer.gov/v0/submission/template/'
+
+submission = input_utils.QueryAPI(gdc_submission_api, gdc_submission_template)
 
 @app.route('/about')
 def about():
@@ -152,8 +127,7 @@ def upload():
     """
     step 1
     """
-    all_node_type = rq.get('https://api.gdc.cancer.gov/v0/submission/_dictionary/_all').json()
-    node_list = list(x for x in all_node_type.keys() if not x.startswith('_'))
+    node_list = submission.get_all_node()
     return render_template('upload.html', node_list=node_list)
 
 @app.route('/mapping', methods=['GET', 'POST'])
@@ -162,9 +136,9 @@ def mapping():
     step 2
     """
     snode = str(request.form.get('comp_select'))
-    rqlist, oplist, eclist = get_fields(node=snode)
+    rqlist, oplist, eclist = submission.get_fields(snode)
     file = request.files['uploadFile']
-    if file_extention(file.filename) == 'csv':
+    if input_utils.file_extention(file.filename) == 'tsv':
         header = file.read().decode("utf-8").strip().split('\n')[0]
         flash('File uploaded, you have selected \"{}\"'.format(snode), 'success')
     else:

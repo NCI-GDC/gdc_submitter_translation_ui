@@ -16,7 +16,7 @@
             <div class="form-group">
               <select name="{{ rk }}" class="form-control">
                 <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split(',') %}
+                {% set fieldList = header.split('\t') %}
                   {% for field in fieldList %}
                     <option value="{{ field }}">{{ field }}</option>
                   {% endfor %}
@@ -37,7 +37,7 @@
               <select name="{{ ok }}" class="form-control">
                 <option disabled selected value="">select from your header</option>
                 <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split(',') %}
+                {% set fieldList = header.split('\t') %}
                   {% for field in fieldList %}
                     <option value="{{ field }}">{{ field }}</option>
                   {% endfor %}
@@ -66,7 +66,7 @@
               <select name="exclusive_chosen_{{ loop.index }}" class="form-control">
                 <option disabled selected value="">select from your header</option>
                 <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split(',') %}
+                {% set fieldList = header.split('\t') %}
                   {% for field in fieldList %}
                     <option value="{{ field }}">{{ field }}</option>
                   {% endfor %}
