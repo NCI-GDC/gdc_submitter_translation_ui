@@ -8,6 +8,7 @@
       <tr>
         <th>Required for <code>{{ selected_node }}</code> :</th>
         <th>Header from your input</th>
+        <th>Choose default value</th>
       </tr>
       {% for rk in required_list %}
       <tr>
@@ -17,16 +18,31 @@
               <select name="{{ rk }}" class="form-control">
                 <option value="not_defined">not_defined</option>
                 {% set fieldList = header.split('\t') %}
-                  {% for field in fieldList %}
-                    <option value="{{ field }}">{{ field }}</option>
-                  {% endfor %}
+                {% for field in fieldList %}
+                <option value="{{ field }}">{{ field }}</option>
+                {% endfor %}
               </select>
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              {% for key, value in enum.items() %}
+                {% if rk == key %}
+                  <select class="form-control" name="default_{{ rk }}">
+                    <option value="not_defined">not_defined</option>
+                    {% for v in value %}
+                    <option value="{{ v }}">{{ v }}</option>
+                    {% endfor %}
+                  </select>
+                {% endif %}
+              {% endfor %}
             </div>
           </td>
       </tr>
       {% endfor %}
       <tr>
         <th>Optional for <code>{{ selected_node }}</code> :</th>
+        <th></th>
         <th></th>
       </tr>
       {% for ok in optional_list %}
@@ -35,13 +51,26 @@
           <td>
             <div class="form-group">
               <select name="{{ ok }}" class="form-control">
-                <option disabled selected value="">select from your header</option>
                 <option value="not_defined">not_defined</option>
                 {% set fieldList = header.split('\t') %}
-                  {% for field in fieldList %}
-                    <option value="{{ field }}">{{ field }}</option>
-                  {% endfor %}
+                {% for field in fieldList %}
+                <option value="{{ field }}">{{ field }}</option>
+                {% endfor %}
               </select>
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              {% for key, value in enum.items() %}
+                {% if ok == key %}
+                  <select class="form-control" name="default_{{ ok }}">
+                    <option value="not_defined">not_defined</option>
+                    {% for v in value %}
+                    <option value="{{ v }}">{{ v }}</option>
+                    {% endfor %}
+                  </select>
+                {% endif %}
+              {% endfor %}
             </div>
           </td>
           <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
@@ -50,6 +79,7 @@
       <tr>
         <th>Optional exclusive fields for <code>{{ selected_node }}</code> :</th>
         <th></th>
+        <th></th>
       </tr>
       {% for ek in exclusive_list %}
       <tr>
@@ -57,20 +87,33 @@
             <div class="form-group">
               <select name="exclusive_field_{{ loop.index }}" class="form-control">
                 {% for field in ek %}
-                  <option value="{{ field }}">{{ field }}</option>
+                <option value="{{ field }}">{{ field }}</option>
                 {% endfor %}
               </select>
           </td>
           <td>
             <div class="form-group">
               <select name="exclusive_chosen_{{ loop.index }}" class="form-control">
-                <option disabled selected value="">select from your header</option>
                 <option value="not_defined">not_defined</option>
                 {% set fieldList = header.split('\t') %}
-                  {% for field in fieldList %}
-                    <option value="{{ field }}">{{ field }}</option>
-                  {% endfor %}
+                {% for field in fieldList %}
+                <option value="{{ field }}">{{ field }}</option>
+                {% endfor %}
               </select>
+            </div>
+          </td>
+          <td>
+            <div class="form-group">
+              {% for key, value in enum.items() %}
+                {% if ek == key %}
+                  <select class="form-control" name="default_{{ ek }}">
+                    <option value="not_defined">not_defined</option>
+                    {% for v in value %}
+                    <option value="{{ v }}">{{ v }}</option>
+                    {% endfor %}
+                  </select>
+                {% endif %}
+              {% endfor %}
             </div>
           </td>
           <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>

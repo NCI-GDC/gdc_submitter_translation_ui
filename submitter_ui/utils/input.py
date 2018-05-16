@@ -25,6 +25,12 @@ class QueryAPI(object):
         node_list = list(x for x in node_type.keys() if not x.startswith('_') and x != 'metaschema')
         return node_list
 
+    def get_node_json(self, node):
+        '''get node json'''
+        node_url = self.api + str(node)
+        node_json = rq.get(node_url).json()
+        return node_json
+
     def get_fields(self, node):
         '''check template, and group properties into 3 groups'''
         surl = self.api + str(node)
@@ -45,3 +51,14 @@ class QueryAPI(object):
         dup = [i for j in exclusive_pairs for i in j]
         optional = [z for z in oplist if z not in dup]
         return (required, optional, exclusive_pairs)
+
+    def get_enum(self, node):
+        '''get enum of a property'''
+        node_enum_dict = {}
+        nurl = self.api + str(node)
+        ndict = rq.get(nurl).json()['properties']
+        for prop in ndict.keys():
+            enum = ndict[prop].get('enum')
+            node_enum_dict[prop] = enum
+        no_empty_dict = {k: v for k, v in node_enum_dict.items() if v is not None}
+        return no_empty_dict
