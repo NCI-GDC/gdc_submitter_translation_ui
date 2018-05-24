@@ -3,32 +3,63 @@
 {% block body %}
 <div class="jumbotron text-left">
   <div class="form-group">
-    <label for="inputTextToSave">Preview output .yaml</label>
-    <textarea id="inputTextToSave" class="form-control" rows="25">{{ data }}</textarea>
+    <label for="inputYamlToSave">Preview output .yaml</label>
+    <textarea id="inputYamlToSave" class="form-control" rows="10">{{ yaml_data }}</textarea>
     <br>
     <div class="input-group mb-3">
       <div class="input-group-prepend">
-        <button onclick="saveTextAsFile()" class="btn btn-outline-primary" type="button">Download</button>
+        <button onclick="saveTextAsFile('inputYamlToSave', 'inputYamlNameToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
       </div>
-      <input id="inputFileNameToSaveAs" type="text" class="form-control" placeholder="File name to save as" aria-label="File name to save as" aria-describedby="basic-addon2">
+      <input id="inputYamlNameToSaveAs" type="text" class="form-control" value="{{ snode }}.yaml" aria-label="{{ snode }}.yaml" aria-describedby="basic-addon2">
     </div>
   </div>
 </div>
-<div class="btn-group btn-group-justified fixed-bottom">
-  <a href="/upload" class="btn btn-outline-success">Upload your fields</a>
-  <button type="button" class="btn btn-outline-info" disabled>Map to GDC</button>
-  <button type="button" class="btn btn-primary btn-block">Get your output</button>
+<br>
+<div class="jumbotron text-left">
+  <div class="form-group">
+    <label for="inputConfToSave">Preview output .conf</label>
+    <textarea id="inputConfToSave" class="form-control" rows="10">{{ conf_data }}</textarea>
+    <br>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <button onclick="saveTextAsFile('inputConfToSave', 'inputConfNameToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
+      </div>
+      <input id="inputConfNameToSaveAs" type="text" class="form-control" value="{{ snode }}.conf" aria-label="{{ snode }}.conf" aria-describedby="basic-addon2">
+    </div>
+  </div>
 </div>
 <br>
+{% if to_be_deleted %}
+<div class="jumbotron text-left">
+  <div class="form-group">
+    <label for="ToBeDeletedToSave">Preview to_be_deleted.yaml</label>
+    <textarea id="ToBeDeletedToSave" class="form-control" rows="10">{{ to_be_deleted }}</textarea>
+    <br>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <button onclick="saveTextAsFile('ToBeDeletedToSave', 'ToBeDeletedToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
+      </div>
+      <input id="ToBeDeletedToSaveAs" type="text" class="form-control" value="to_be_deleted.yaml" aria-label="to_be_deleted.yaml" aria-describedby="basic-addon2">
+    </div>
+  </div>
+</div>
+<br>
+{% else %}
+{% endif %}
+<div class="btn-group btn-group-justified fixed-bottom">
+  <a href="/upload" class="btn btn-outline-success">Select & Upload</a>
+  <button type="button" class="btn btn-outline-info" disabled>Select & Map</button>
+  <button type="button" class="btn btn-primary btn-block">Check & Download</button>
+</div>
 
 <script type="text/javascript">
 
-function saveTextAsFile()
+function saveTextAsFile(filecontent, filename)
 {
-    var textToSave = document.getElementById("inputTextToSave").value;
+    var textToSave = document.getElementById( filecontent ).value;
     var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
     var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
-    var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
+    var fileNameToSaveAs = document.getElementById( filename ).value;
 
     var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;

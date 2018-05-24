@@ -1,10 +1,15 @@
 '''input utils'''
 
+import itertools
 import requests as rq
 
 def file_extention(filename):
     '''check ext'''
     return '.' in filename and filename.rsplit('.', 1)[1].lower()
+
+def filter_list(alist, blist):
+    '''remove blist from alist'''
+    return list(set(alist)-set(blist))
 
 class QueryAPI(object):
     '''this class describes some interactions with the GDC submission API,
@@ -17,12 +22,15 @@ class QueryAPI(object):
     def get_all_node(self):
         '''get all node type from GDC dictionary
         '''
-        all_node_url = self.api + '_all'
+        node_list = []
+        all_node_url = self.template + '?format=json'
         try:
-            node_type = rq.get(all_node_url).json()
+            node_dict = rq.get(all_node_url).json()
+            for dct in node_dict:
+                node_list.append(dct.get('type'))
+            node_list.sort()
         except rq.exceptions.ConnectionError as err:
             print('Failed to connect {}. {}'.format(all_node_url, err))
-        node_list = list(x for x in node_type.keys() if not x.startswith('_') and x != 'metaschema')
         return node_list
 
     def get_node_json(self, node):
@@ -33,24 +41,33 @@ class QueryAPI(object):
 
     def get_fields(self, node):
         '''check template, and group properties into 3 groups'''
-        surl = self.api + str(node)
-        sdict = rq.get(surl).json()
-        rqlist = []
-        if sdict.get('required'):
-            rqlist = sdict['required']
+        if self.get_node_json(node).get('required'):
+            rqlist = self.get_node_json(node)['required']
+        else: rqlist = []
         stemp = '{}{}?format=json'.format(self.template, str(node))
         tplist = list(rq.get(stemp).json().keys())
-        required = [x for x in rqlist if x in tplist]
-        oplist = [y for y in tplist if y not in rqlist]
-        exclusive_pairs = []
-        if sdict.get('links'):
-            for pair in sdict['links']:
-                if pair.get('exclusive'):
-                    if pair['exclusive'] is True:
-                        exclusive_pairs.append([d['name'] for d in pair['subgroup']])
-        dup = [i for j in exclusive_pairs for i in j]
-        optional = [z for z in oplist if z not in dup]
-        return (required, optional, exclusive_pairs)
+        oplist = filter_list(tplist, rqlist)
+        links = []
+        exclusive_links = []
+        inexclusive_links = []
+        if self.get_node_json(node).get('links'):
+            for link in self.get_node_json(node)['links']:
+                if link.get('exclusive'):
+                    exclusive_links.append([d['name'] for d in link['subgroup']])
+                elif link.get('subgroup'):
+                    for dct in link['subgroup']:
+                        inexclusive_links.append(dct['name'])
+                else:
+                    links.append(link['name'])
+        if exclusive_links:
+            exclude_list = list(itertools.chain\
+                           .from_iterable(links + exclusive_links + inexclusive_links))
+        else:
+            exclude_list = list(itertools.chain\
+                           .from_iterable([links + exclusive_links + inexclusive_links]))
+        optional = filter_list(oplist, exclude_list) + ['s3_loc']
+        required = filter_list([x for x in rqlist if x in tplist], exclude_list)
+        return required, optional, exclusive_links, inexclusive_links, links
 
     def get_enum(self, node):
         '''get enum of a property'''

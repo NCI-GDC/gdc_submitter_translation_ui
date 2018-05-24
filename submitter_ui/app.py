@@ -1,4 +1,4 @@
-# pylint: disable=C0301, C0103, E0611, E0401
+# pylint: disable=C0103, E0611, E0401
 
 """
 flask playground
@@ -20,33 +20,25 @@ submission = input_utils.QueryAPI(gdc_submission_api, gdc_submission_template)
 
 @app.route('/about')
 def about():
-    """
-    about page
-    """
+    '''about page'''
     return render_template('about.html')
 
 @app.route('/')
 def home():
-    """
-    home page
-    """
+    '''home page'''
     return render_template('home.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    """
-    step 1
-    """
+    '''upload tsv'''
     node_list = submission.get_all_node()
     return render_template('upload.html', node_list=node_list)
 
 @app.route('/mapping', methods=['GET', 'POST'])
 def mapping():
-    """
-    step 2
-    """
+    '''select fields'''
     snode = str(request.form.get('comp_select'))
-    rqlist, oplist, eclist = submission.get_fields(snode)
+    rqlist, oplist, eclist, ielist, llist = submission.get_fields(snode)
     enum = submission.get_enum(snode)
     file = request.files['uploadFile']
     if input_utils.file_extention(file.filename) == 'tsv':
@@ -54,19 +46,26 @@ def mapping():
         flash('File uploaded, you have selected \"{}\"'.format(snode), 'success')
     else:
         flash('Not a valid file format', 'danger')
-        return render_template('mapping.html', selected_node=snode, required_list=[""], optional_list=[""], header="", exclusive_list=[""], enum={})
-    return render_template('mapping.html', selected_node=snode, required_list=rqlist, optional_list=oplist, header=header, exclusive_list=eclist, enum=enum)
+        return render_template('mapping.html', header="", \
+               selected_node=snode, required_list=[], optional_list=[], \
+               exclusive_list=[], inexclusive_list=[], link_list=[], enum={})
+    return render_template('mapping.html', header=header, \
+           selected_node=snode, required_list=rqlist, optional_list=oplist, \
+           exclusive_list=eclist, inexclusive_list=ielist, link_list=llist, enum=enum)
 
 @app.route('/output/<snode>', methods=['GET', 'POST'])
 def output(snode):
-    """
-    step 3
-    """
+    '''preview/download outputs'''
     user_dict = request.form.to_dict()
     sprop = submission.get_node_json(snode)['properties']
     mapper = output_utils.Mapping(user_dict)
-    yaml_style = mapper.get_yaml_with_style("", sprop, snode)
-    return render_template('output.html', snode=snode, data=yaml_style)
+    yaml_str = output_utils.get_style(mapper.get_yaml_string("", sprop, snode))
+    conf_str = output_utils.get_style(mapper.get_conf_string(snode))
+    if mapper.get_dict_for_delete_yaml():
+        tbd_str = output_utils.get_style(mapper.get_tbd_string(snode))
+    else: tbd_str = ""
+    return render_template('output.html', snode=snode, yaml_data=yaml_str, \
+                           conf_data=conf_str, to_be_deleted=tbd_str)
 
 if __name__ == '__main__':
     app.secret_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
