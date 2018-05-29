@@ -1,21 +1,18 @@
-##GDC submitter translation UI
+## GDC submitter translation UI
 
 This application is to help submitter create YAML and CONF input files for the [GDC submitter](https://github.com/NCI-GDC/gdc-submitter).
 
-###Installation
+### Installation
 
 We suggest to work in the python virtual environment.
 - Download source code:
-```git clone git@github.com:NCI-GDC/gdc_submitter_translation_ui.git
-```
+  `git clone git@github.com:NCI-GDC/gdc_submitter_translation_ui.git`
 - Install dependencies:
-```python setup.py install
-```
+  `python setup.py install`
 - Run the app:
-```python submitter_ui/app.py
-```
+  `python submitter_ui/app.py`
 
-###More about the UI
+### More about the UI
 The YAML and CONF files created here are for the [GDC submitter](https://github.com/NCI-GDC/gdc-submitter) only. If you desired to submit through API, please refer to [GDC doc site](https://docs.gdc.cancer.gov/API/Users_Guide/Submission/).
 The YAML tells the GDC submitter which properties it should be looking for and where it could be found in your uploaded TSV file.
 - For required properties, there is no way to deselect. However, they do not have to be in the TSV, since many of them could be just selected from `enum`.
