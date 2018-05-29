@@ -1,4 +1,4 @@
-# pylint: disable=C0103, E0611, E0401
+# pylint: disable=C0103
 
 """
 flask playground
