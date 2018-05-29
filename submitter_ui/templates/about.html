@@ -3,7 +3,30 @@
 {% block body %}
 <div class="jumbotron text-left">
   <h2>About GDC Submitter Translation UI</h2>
-  <p class="lead">This application is to help GDC user map fields to GDC submission template.</p>
+  <p class="lead">This application is to help submitter create YAML and CONF input files for the <a href="https://github.com/NCI-GDC/gdc-submitter">GDC submitter.</a> </p>
 </div>
-<p>how to</p>
+<p class="lead font-weight-bold">What is the YAML and CONF?<br>
+  <small class="form-text text-muted text-left">Terms in red are API node name.</small>
+</p>
+<ul>
+  <li>The YAML and CONF files created here are for the <a href="https://github.com/NCI-GDC/gdc-submitter">GDC submitter</a> only. If you desired to submit through API, please refer to <a href="https://docs.gdc.cancer.gov/API/Users_Guide/Submission/">GDC doc site</a>.</li>
+  <br>
+  <li>The YAML tells the GDC submitter which properties it should be looking for and where it could be found in your uploaded TSV file.</li>
+  <ul>
+    <li>For required properties, there is no way to deselect. However, they do not have to be in the TSV, since many of them could be just selected from <code>enum</code>.</li>
+    <li>For optional properties, not including <code>links</code>, submitter is able to deselect the node by delete button. Unfortunately, the current UI does not have a undo or restore function. If submitter accidentally deletes a desired node, one has to refresh the page. :(</li>
+    <li><kbd>s3_loc</kbd> is not a property in the API, but in the GDC submitter. It exists in all the node in this UI, please feel free to delete it if you do not need.</li>
+    <li>For properties that are also <code>links</code>, they would not be presented in the YAML output, but in CONF. Please see more details below.</li>
+  </ul>
+  <br>
+  <li>The CONF tells the GDC submitter what is the link/anchor node and where it is in the TSV.</li>
+    <ul>
+      <li>The current design of the GDC submitter only supports <strong>ONE</strong> link/anchor node in the CONF. However, the current UI is able to present all the links that submitter selects in the CONF which will unfortunately crash the GDC submitter. A better designed UI would then have to create multiple YAMLs based on selected links in order to cooperate, which will be happening soon.</li>
+      <li>Because of the above issue, submitter now has to be responsible to select only one link/anchor node, and delete others.</li>
+      <li>The <kbd>link_id_type</kbd> is basically telling the GDC submitter which id you are using in your TSV. It's either <code>id</code> or <code>submitter_id</code>.</li>
+      <li>If submitter is going to perform a replacement upon the submission, one has to create a <kbd>to_be_deleted.yaml</kbd> by selecting the checkbox. It will then popup 2 new fields which will be in the final output, and provides the info that the GDC submitter needs.</li>
+    </ul>
+</ul>
+<br>
+</p>
 {% endblock %}
