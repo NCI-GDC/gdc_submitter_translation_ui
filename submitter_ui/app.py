@@ -4,8 +4,7 @@
 flask playground
 """
 
-import random
-import string
+import uuid
 from flask import Flask, render_template, request, flash
 
 import utils.input as input_utils
@@ -68,5 +67,5 @@ def output(snode):
                            conf_data=conf_str, to_be_deleted=tbd_str)
 
 if __name__ == '__main__':
-    app.secret_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+    app.secret_key = uuid.uuid4().hex
     app.run(debug=True)
