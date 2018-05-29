@@ -11,6 +11,7 @@ We suggest to work in the python virtual environment.
   `python setup.py install`
 - Run the app:
   `python submitter_ui/app.py`
+- Open a web browser, and go to `localhost:5000/`
 
 ### More about the UI
 The YAML and CONF files created here are for the [GDC submitter](https://github.com/NCI-GDC/gdc-submitter) only. If you desired to submit through API, please refer to [GDC doc site](https://docs.gdc.cancer.gov/API/Users_Guide/Submission/).
