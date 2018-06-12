@@ -39,9 +39,9 @@ def mapping():
     snode = str(request.form.get('comp_select'))
     rqlist, oplist, eclist, ielist, llist = submission.get_fields(snode)
     enum = submission.get_enum(snode)
-    file = request.files['uploadFile']
-    if input_utils.file_extention(file.filename) == 'tsv':
-        header = file.read().decode("utf-8").strip().split('\n')[0]
+    ufile = request.files['uploadFile']
+    if input_utils.file_extention(ufile.filename) == 'tsv':
+        header = ufile.read().decode("utf-8").strip().split('\n')[0]
         flash('File uploaded, you have selected \"{}\"'.format(snode), 'success')
     else:
         flash('Not a valid file format', 'danger')
