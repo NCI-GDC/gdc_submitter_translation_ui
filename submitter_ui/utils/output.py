@@ -124,8 +124,8 @@ class Mapping(object):
         s3_loc_str = """
         s3_loc:
             type: string
-            upload_field: True
-            skip_upload: True
+            upload_field: true
+            skip_upload: false
             fieldname:
                 - {FIELDNAME_IN_THE_TSV}
         """
@@ -160,13 +160,21 @@ class Mapping(object):
                         FIELDNAME_IN_THE_TSV=value
                     )
                 elif key == 'type':
-                    temp_d_str = self.temp_str + default_str
-                    yaml_str += temp_d_str.format(
-                        FIELDNAME_IN_THE_NODE=key,
-                        TYPE="string",
-                        FIELDNAME_IN_THE_TSV=value,
-                        DEFAULT=snode
-                    )
+                    if value == 'not_defined':
+                        temp_d_str = self.temp_str + default_str
+                        yaml_str += temp_d_str.format(
+                            FIELDNAME_IN_THE_NODE=key,
+                            TYPE="string",
+                            FIELDNAME_IN_THE_TSV=value,
+                            DEFAULT=snode
+                        )
+                    else:
+                        temp_d_str = self.temp_str
+                        yaml_str += temp_d_str.format(
+                            FIELDNAME_IN_THE_NODE=key,
+                            TYPE="string",
+                            FIELDNAME_IN_THE_TSV=value
+                        )
                 elif key == 's3_loc':
                     yaml_str += s3_loc_str.format(FIELDNAME_IN_THE_TSV=value)
                 else:
