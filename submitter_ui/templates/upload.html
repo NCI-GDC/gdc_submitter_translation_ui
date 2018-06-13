@@ -5,14 +5,11 @@
   <form class="form-group" method="POST" enctype="multipart/form-data" action="{{ url_for('mapping') }}">
     <label for="comp_select">Select desired node type</label>
     <br>
-    <select name="comp_select" class="js-stats" multiple="multiple" style="width: 100%">
+    <select name="comp_select[]" class="js-stats form-control" multiple="multiple" style="width: 100%">
       {% for key in node_list %}
       <option value="{{ key }}">{{ key }}</option>
       {% endfor %}
     </select>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
     <script>
       $(document).ready(function() {
           $('.js-stats').select2({
