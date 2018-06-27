@@ -36,23 +36,19 @@ def upload():
 @app.route('/mapping', methods=['GET', 'POST'])
 def mapping():
     '''select fields'''
-    snode = str(request.form.get('comp_select'))
-    rqlist, oplist, eclist, ielist, llist = submission.get_fields(snode)
-    enum = submission.get_enum(snode)
+    snode = request.form.getlist('comp_select[]')
+    sdict = submission.get_nodes_dict(snode)
     ufile = request.files['uploadFile']
     if input_utils.file_extention(ufile.filename) == 'tsv':
         header = ufile.read().decode("utf-8").strip().split('\n')[0]
-        flash('File uploaded, you have selected \"{}\"'.format(snode), 'success')
+        flash('File uploaded, you have selected {}'\
+             .format([x.encode('ascii', 'ignore') for x in snode]), 'success')
     else:
         flash('Not a valid file format', 'danger')
-        return render_template('mapping.html', header="", \
-               selected_node=snode, required_list=[], optional_list=[], \
-               exclusive_list=[], inexclusive_list=[], link_list=[], enum={})
-    return render_template('mapping.html', header=header, \
-           selected_node=snode, required_list=rqlist, optional_list=oplist, \
-           exclusive_list=eclist, inexclusive_list=ielist, link_list=llist, enum=enum)
+        return render_template('mapping.html', header="", nodes_dict=sdict)
+    return render_template('mapping.html', header=header, nodes_dict=sdict)
 
-@app.route('/output/<snode>', methods=['GET', 'POST'])
+@app.route('/output', methods=['GET', 'POST'])
 def output(snode):
     '''preview/download outputs'''
     user_dict = request.form.to_dict()
