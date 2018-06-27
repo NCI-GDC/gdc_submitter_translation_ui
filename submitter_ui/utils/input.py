@@ -1,3 +1,5 @@
+# pylint: disable=C0325
+
 '''input utils'''
 
 import itertools
@@ -39,43 +41,59 @@ class QueryAPI(object):
         node_json = rq.get(node_url).json()
         return node_json
 
+    def get_enum(self, node):
+        '''get enum of a property'''
+        node_enum_dict = {}
+        ndict = self.get_node_json(node)['properties']
+        for prop in ndict.keys():
+            enum = ndict[prop].get('enum')
+            node_enum_dict[prop] = enum
+        no_empty_dict = {k: v for k, v in node_enum_dict.items() if v is not None}
+        return no_empty_dict
+
     def get_fields(self, node):
-        '''check template, and group properties into 3 groups'''
+        '''check template, and group properties into 5 groups'''
+        field_dict = {
+            "required": [],
+            "optional": [],
+            "exclusive_links": [],
+            "inexclusive_links": [],
+            "links": [],
+            "enums": {}
+        }
+        field_dict['enums'] = self.get_enum(node)
         if self.get_node_json(node).get('required'):
             rqlist = self.get_node_json(node)['required']
         else: rqlist = []
         stemp = '{}{}?format=json'.format(self.template, str(node))
         tplist = list(rq.get(stemp).json().keys())
         oplist = filter_list(tplist, rqlist)
-        links = []
-        exclusive_links = []
-        inexclusive_links = []
         if self.get_node_json(node).get('links'):
             for link in self.get_node_json(node)['links']:
                 if link.get('exclusive'):
-                    exclusive_links.append([d['name'] for d in link['subgroup']])
+                    field_dict['exclusive_links'].append([d['name'] for d in link['subgroup']])
                 elif link.get('subgroup'):
                     for dct in link['subgroup']:
-                        inexclusive_links.append(dct['name'])
+                        field_dict['inexclusive_links'].append(dct['name'])
                 else:
-                    links.append(link['name'])
-        if exclusive_links:
+                    field_dict['links'].append(link['name'])
+        if field_dict.get('exclusive_links'):
             exclude_list = list(itertools.chain\
-                           .from_iterable(links + exclusive_links + inexclusive_links))
+                           .from_iterable(field_dict['links'] + \
+                           field_dict['exclusive_links'] + \
+                           field_dict['inexclusive_links']))
         else:
             exclude_list = list(itertools.chain\
-                           .from_iterable([links + exclusive_links + inexclusive_links]))
-        optional = filter_list(oplist, exclude_list) + ['s3_loc']
-        required = filter_list([x for x in rqlist if x in tplist], exclude_list)
-        return required, optional, exclusive_links, inexclusive_links, links
+                           .from_iterable([field_dict['links'] + \
+                           field_dict['exclusive_links'] + \
+                           field_dict['inexclusive_links']]))
+        field_dict['optional'] = filter_list(oplist, exclude_list) + ['s3_loc']
+        field_dict['required'] = filter_list([x for x in rqlist if x in tplist], exclude_list)
+        return field_dict
 
-    def get_enum(self, node):
-        '''get enum of a property'''
-        node_enum_dict = {}
-        nurl = self.api + str(node)
-        ndict = rq.get(nurl).json()['properties']
-        for prop in ndict.keys():
-            enum = ndict[prop].get('enum')
-            node_enum_dict[prop] = enum
-        no_empty_dict = {k: v for k, v in node_enum_dict.items() if v is not None}
-        return no_empty_dict
+    def get_nodes_dict(self, node_list):
+        '''get dict for all the selected nodes'''
+        nodes_dict = {}
+        for node in node_list:
+            nodes_dict[node] = self.get_fields(node)
+        return nodes_dict
