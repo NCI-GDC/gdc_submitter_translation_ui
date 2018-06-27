@@ -71,6 +71,7 @@
                 <td>
                   <div class="form-group">
                     <select name="{{ node }}_{{ ok }}" class="form-control">
+                      <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
                       {% for field in fieldList %}
@@ -84,6 +85,7 @@
                     {% for key, value in prop['enums'].items() %}
                       {% if ok == key %}
                         <select class="form-control" name="{{ node }}_default_{{ ok }}">
+                          <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
                           <option value="{{ v }}">{{ v }}</option>
@@ -93,7 +95,7 @@
                     {% endfor %}
                   </div>
                 </td>
-                <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
             </tr>
             {% endfor %}
             {% else %}
@@ -118,6 +120,7 @@
                 <td>
                   <div class="form-group">
                     <select name="link_exclusive_chosen_{{ node }}_{{ loop.index }}" class="form-control">
+                      <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
                       {% for field in fieldList %}
@@ -131,6 +134,7 @@
                     {% for key, value in prop['enums'].items() %}
                       {% if ek == key %}
                         <select class="form-control" name="{{ node }}_default_{{ ek }}">
+                          <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
                           <option value="{{ v }}">{{ v }}</option>
@@ -140,7 +144,7 @@
                     {% endfor %}
                   </div>
                 </td>
-                <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
             </tr>
             {% endfor %}
             {% elif prop.get('inexclusive_links') %}
@@ -155,6 +159,7 @@
                 <td>
                   <div class="form-group">
                     <select name="link_{{ node }}_{{ ik }}" class="form-control">
+                      <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
                       {% for field in fieldList %}
@@ -168,6 +173,7 @@
                     {% for key, value in prop['enums'].items() %}
                       {% if ik == key %}
                         <select class="form-control" name="{{ node }}_default_{{ ik }}">
+                          <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
                           <option value="{{ v }}">{{ v }}</option>
@@ -177,7 +183,7 @@
                     {% endfor %}
                   </div>
                 </td>
-                <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
             </tr>
             {% endfor %}
             {% elif prop.get('links') %}
@@ -192,6 +198,7 @@
                 <td>
                   <div class="form-group">
                     <select name="link_{{ node }}_{{ lk }}" class="form-control">
+                      <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
                       {% for field in fieldList %}
@@ -205,6 +212,7 @@
                     {% for key, value in prop['enums'].items() %}
                       {% if lk == key %}
                         <select class="form-control" name="{{ node }}_default_{{ lk }}">
+                          <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
                           <option value="{{ v }}">{{ v }}</option>
@@ -214,7 +222,7 @@
                     {% endfor %}
                   </div>
                 </td>
-                <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
             </tr>
             {% endfor %}
             {% else %}
@@ -235,6 +243,14 @@
                   </div>
                 </td>
                 <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                <input type="button" value="Undo" class="btn btn-info" onclick="$(this).parents('table').find('tr').show()">
+              </td>
             </tr>
           </table>
         </div>
@@ -292,10 +308,6 @@
   <button type="button" class="btn btn-outline-primary" disabled>Check & Download</button>
 </div>
 <script>
-function deleteRow(r) {
-    var i = r.parentNode.parentNode.rowIndex;
-    document.getElementById("mappingTable").deleteRow(i);
-}
 function checkdisplay() {
     var checkBox = document.getElementById("myCheck");
     var Row0 = document.getElementById("tbd_header")
