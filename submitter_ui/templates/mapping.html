@@ -9,11 +9,11 @@
       <ul class="nav nav-pills" role="tablist">
         {% for node in nodes_dict.keys() %}
         <li class="nav-item">
-          <a class="nav-link" data-toggle="pill" href="#{{ node }}">{{ node }}</a>
+          <a class="nav-link" data-toggle="pill" href="#{{ node }}"><code>{{ node }}</code></a>
         </li>
         {% endfor %}
         <li>
-          <a class="nav-link" data-toggle="pill" href="#Submit">Submit</a>
+          <a class="nav-link" data-toggle="pill" href="#Submit"><code>Submit</code></a>
         </li>
       </ul>
       <!-- Tab panes -->
