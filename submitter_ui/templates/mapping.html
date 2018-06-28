@@ -130,19 +130,6 @@
                   </div>
                 </td>
                 <td>
-                  <div class="form-group">
-                    {% for key, value in prop['enums'].items() %}
-                      {% if ek == key %}
-                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ ek }}">
-                          <option disabled selected value="">select default</option>
-                          <option value="not_defined">not_defined</option>
-                          {% for v in value %}
-                          <option value="{{ v }}">{{ v }}</option>
-                          {% endfor %}
-                        </select>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
                 </td>
                 <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
             </tr>
@@ -169,19 +156,6 @@
                   </div>
                 </td>
                 <td>
-                  <div class="form-group">
-                    {% for key, value in prop['enums'].items() %}
-                      {% if ik == key %}
-                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ ik }}">
-                          <option disabled selected value="">select default</option>
-                          <option value="not_defined">not_defined</option>
-                          {% for v in value %}
-                          <option value="{{ v }}">{{ v }}</option>
-                          {% endfor %}
-                        </select>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
                 </td>
                 <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
             </tr>
@@ -208,19 +182,6 @@
                   </div>
                 </td>
                 <td>
-                  <div class="form-group">
-                    {% for key, value in prop['enums'].items() %}
-                      {% if lk == key %}
-                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ lk }}">
-                          <option disabled selected value="">select default</option>
-                          <option value="not_defined">not_defined</option>
-                          {% for v in value %}
-                          <option value="{{ v }}">{{ v }}</option>
-                          {% endfor %}
-                        </select>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
                 </td>
                 <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
             </tr>
@@ -233,10 +194,10 @@
               <th></th>
             </tr>
             <tr>
-                <td class="align-middle"><label for="{{ node }}_link_id_type"><kbd>link_id_type</kbd></label></td>
+                <td class="align-middle"><label for="link_{{ node }}_id_type"><kbd>link_id_type</kbd></label></td>
                 <td>
                   <div class="form-group">
-                    <select name="{{ node }}_link_id_type" class="form-control js-example-basic-single" style="width: 100%">
+                    <select name="link_{{ node }}_id_type" class="form-control js-example-basic-single" style="width: 100%">
                       <option value="id">id</option>
                       <option value="submitter_id">submitter_id</option>
                     </select>
