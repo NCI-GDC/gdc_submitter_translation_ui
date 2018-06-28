@@ -48,7 +48,8 @@ def remove_dict_key_prefix(dct, prefix):
 
 class Mapping(object):
     '''this class describes some methods prepare output yaml/conf file'''
-    def __init__(self, user_dict):
+    def __init__(self, node_list, user_dict):
+        self.node_list = node_list
         self.user_dict = user_dict
         self.temp_str = """
         {FIELDNAME_IN_THE_NODE}:
@@ -79,9 +80,17 @@ class Mapping(object):
               - not_defined
           tag: {ID_TYPE}/{SNODE}"""
 
-    def _get_dict_for_yaml(self):
+    def create_output_dict(self):
+        '''create output dict for all the selected nodes'''
+        output_dict = {node: "" for node in self.node_list }
+        return output_dict
+
+    def _get_dict_for_yaml(self, snode):
         '''get part of the user dict from html for yaml output'''
-        dict_for_yaml = {key: value for key, value in self.user_dict.items() \
+        dict_for_node = {key: value for key, value in self.user_dict.items() \
+                        if key.startswith("{}_".format(snode))}
+        renamed_node_dict = remove_dict_key_prefix(dict_for_node, "{}_".format(snode))
+        dict_for_yaml = {key: value for key, value in renamed_node_dict.items() \
                         if not key.startswith("link_") and not key.startswith("tbd_")}
         return dict_for_yaml
 
@@ -97,7 +106,7 @@ class Mapping(object):
                         if key.startswith("tbd_")}
         return dict_for_tbd
 
-    def _remap_dict(self):
+    def _remap_dict(self, snode):
         '''remap dict for conf ouptut'''
         new_dict = remove_dict_key_prefix(self._get_dict_for_conf(), 'link_')
         if any(k.startswith("exclusive_") for k in new_dict.keys()):
@@ -114,8 +123,8 @@ class Mapping(object):
             remap['id_type'] = new_dict['id_type']
         else:
             remap = new_dict
-        if self._get_dict_for_yaml().get('project_id'):
-            remap['project_id'] = self._get_dict_for_yaml()['project_id']
+        if self._get_dict_for_yaml(snode).get('project_id'):
+            remap['project_id'] = self._get_dict_for_yaml(snode)['project_id']
         else: remap['project_id'] = 'not_defined'
         return remap
 
