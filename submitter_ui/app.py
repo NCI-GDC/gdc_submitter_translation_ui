@@ -36,30 +36,32 @@ def upload():
 @app.route('/mapping', methods=['GET', 'POST'])
 def mapping():
     '''select fields'''
-    snode = request.form.getlist('comp_select[]')
-    sdict = submission.get_nodes_dict(snode)
+    snodes = request.form.getlist('comp_select[]')
+    nodes_str = '&'.join(snodes)
+    sdict = submission.get_nodes_dict(snodes)
     ufile = request.files['uploadFile']
     if input_utils.file_extention(ufile.filename) == 'tsv':
         header = ufile.read().decode("utf-8").strip().split('\n')[0]
         flash('File uploaded, you have selected {}'\
-             .format([x.encode('ascii', 'ignore') for x in snode]), 'success')
+             .format([x.encode('ascii', 'ignore') for x in snodes]), 'success')
     else:
         flash('Not a valid file format', 'danger')
-        return render_template('mapping.html', header="", nodes_dict=sdict)
-    return render_template('mapping.html', header=header, nodes_dict=sdict)
+        return render_template('mapping.html', header="", nodes_dict=sdict, snodes=nodes_str)
+    return render_template('mapping.html', header=header, nodes_dict=sdict, snodes=nodes_str)
 
-@app.route('/output', methods=['GET', 'POST'])
-def output(snode):
+@app.route('/output/<snodes>', methods=['GET', 'POST'])
+def output(snodes):
     '''preview/download outputs'''
     user_dict = request.form.to_dict()
-    sprop = submission.get_node_json(snode)['properties']
+    snode_list = snodes.split('&')
     mapper = output_utils.Mapping(user_dict)
-    yaml_str = output_utils.get_style(mapper.get_yaml_string("", sprop, snode))
-    conf_str = output_utils.get_style(mapper.get_conf_string(snode))
+    sprop = submission.get_node_json(snodes)['properties']
+    yaml_str = output_utils.get_style(mapper.get_yaml_string("", sprop, snodes))
+    conf_str = output_utils.get_style(mapper.get_conf_string(snodes))
     if mapper.get_dict_for_delete_yaml():
-        tbd_str = output_utils.get_style(mapper.get_tbd_string(snode))
+        tbd_str = output_utils.get_style(mapper.get_tbd_string(snodes))
     else: tbd_str = ""
-    return render_template('output.html', snode=snode, yaml_data=yaml_str, \
+    return render_template('output.html', snodes=snodes, yaml_data=yaml_str, \
                            conf_data=conf_str, to_be_deleted=tbd_str)
 
 if __name__ == '__main__':
