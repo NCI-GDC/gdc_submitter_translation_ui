@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="jumbotron text-left">
-  <form action="{{ url_for('output') }}" method="POST" id="user_form">
+  <form action="{{ url_for('output', snodes=snodes) }}" method="POST" id="user_form">
     <div class="container">
       <!-- Nav tabs -->
       <ul class="nav nav-pills" role="tablist">
@@ -32,7 +32,7 @@
                 <td class="align-middle"><label for="{{ node }}_{{ rk }}"><kbd>{{ rk }}</kbd></label></td>
                 <td>
                   <div class="form-group">
-                    <select name="{{ node }}_{{ rk }}" class="form-control">
+                    <select name="{{ node }}_{{ rk }}" class="form-control js-example-basic-single" style="width: 100%">
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
                       {% for field in fieldList %}
@@ -45,7 +45,7 @@
                   <div class="form-group">
                     {% for key, value in prop['enums'].items() %}
                       {% if rk == key %}
-                        <select class="form-control" name="{{ node }}_default_{{ rk }}">
+                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ rk }}">
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
                           <option value="{{ v }}">{{ v }}</option>
@@ -70,7 +70,7 @@
                 <td class="align-middle"><label for="{{ node }}_{{ ok }}"><kbd>{{ ok }}</kbd></label></td>
                 <td>
                   <div class="form-group">
-                    <select name="{{ node }}_{{ ok }}" class="form-control">
+                    <select name="{{ node }}_{{ ok }}" class="form-control js-example-basic-single" style="width: 100%">
                       <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
@@ -84,7 +84,7 @@
                   <div class="form-group">
                     {% for key, value in prop['enums'].items() %}
                       {% if ok == key %}
-                        <select class="form-control" name="{{ node }}_default_{{ ok }}">
+                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ ok }}">
                           <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
@@ -110,7 +110,7 @@
             <tr>
                 <td>
                   <div class="form-group">
-                    <select name="link_exclusive_field_{{ node }}_{{ loop.index }}" class="form-control">
+                    <select name="link_exclusive_field_{{ node }}_{{ loop.index }}" class="form-control js-example-basic-single" style="width: 100%">
                       {% for field in ek %}
                       <option value="{{ field }}">{{ field }}</option>
                       {% endfor %}
@@ -119,7 +119,7 @@
                 </td>
                 <td>
                   <div class="form-group">
-                    <select name="link_exclusive_chosen_{{ node }}_{{ loop.index }}" class="form-control">
+                    <select name="link_exclusive_chosen_{{ node }}_{{ loop.index }}" class="form-control js-example-basic-single" style="width: 100%">
                       <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
@@ -133,7 +133,7 @@
                   <div class="form-group">
                     {% for key, value in prop['enums'].items() %}
                       {% if ek == key %}
-                        <select class="form-control" name="{{ node }}_default_{{ ek }}">
+                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ ek }}">
                           <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
@@ -158,7 +158,7 @@
                 <td class="align-middle"><label for="link_{{ node }}_{{ ik }}"><kbd>{{ ik }}</kbd></label></td>
                 <td>
                   <div class="form-group">
-                    <select name="link_{{ node }}_{{ ik }}" class="form-control">
+                    <select name="link_{{ node }}_{{ ik }}" class="form-control js-example-basic-single" style="width: 100%">
                       <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
@@ -172,7 +172,7 @@
                   <div class="form-group">
                     {% for key, value in prop['enums'].items() %}
                       {% if ik == key %}
-                        <select class="form-control" name="{{ node }}_default_{{ ik }}">
+                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ ik }}">
                           <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
@@ -197,7 +197,7 @@
                 <td class="align-middle"><label for="link_{{ node }}_{{ lk }}"><kbd>{{ lk }}</kbd></label></td>
                 <td>
                   <div class="form-group">
-                    <select name="link_{{ node }}_{{ lk }}" class="form-control">
+                    <select name="link_{{ node }}_{{ lk }}" class="form-control js-example-basic-single" style="width: 100%">
                       <option disabled selected value="">select from your header</option>
                       <option value="not_defined">not_defined</option>
                       {% set fieldList = header.split('\t') %}
@@ -211,7 +211,7 @@
                   <div class="form-group">
                     {% for key, value in prop['enums'].items() %}
                       {% if lk == key %}
-                        <select class="form-control" name="{{ node }}_default_{{ lk }}">
+                        <select class="form-control js-example-basic-single" style="width: 100%" name="{{ node }}_default_{{ lk }}">
                           <option disabled selected value="">select default</option>
                           <option value="not_defined">not_defined</option>
                           {% for v in value %}
@@ -236,7 +236,7 @@
                 <td class="align-middle"><label for="{{ node }}_link_id_type"><kbd>link_id_type</kbd></label></td>
                 <td>
                   <div class="form-group">
-                    <select name="{{ node }}_link_id_type" class="form-control">
+                    <select name="{{ node }}_link_id_type" class="form-control js-example-basic-single" style="width: 100%">
                       <option value="id">id</option>
                       <option value="submitter_id">submitter_id</option>
                     </select>
@@ -266,7 +266,7 @@
               <td class="align-middle"><label for="tbd_id_type"><kbd>id_type</kbd></label></td>
               <td>
               <div class="form-group">
-                <select name="tbd_id_type" class="form-control">
+                <select name="tbd_id_type" class="form-control js-example-basic-single" style="width: 100%">
                   <option disabled value="" selected>...</option>
                   <option value="id">id</option>
                   <option value="submitter_id">submitter_id</option>
@@ -279,7 +279,7 @@
               <td class="align-middle"><label for="tbd_source_field"><kbd>source_field</kbd></label></td>
               <td>
               <div class="form-group">
-                <select name="tbd_source_field" class="form-control">
+                <select name="tbd_source_field" class="form-control js-example-basic-single" style="width: 100%">
                   <option disabled value="" selected>...</option>
                   <option value="not_defined">not_defined</option>
                   {% set fieldList = header.split('\t') %}
@@ -308,6 +308,9 @@
   <button type="button" class="btn btn-outline-primary" disabled>Check & Download</button>
 </div>
 <script>
+$(document).ready(function() {
+    $('.js-example-basic-single').select2();
+});
 function checkdisplay() {
     var checkBox = document.getElementById("myCheck");
     var Row0 = document.getElementById("tbd_header")
