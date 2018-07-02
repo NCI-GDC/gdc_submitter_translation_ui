@@ -95,7 +95,7 @@
                     {% endfor %}
                   </div>
                 </td>
-                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
             </tr>
             {% endfor %}
             {% else %}
@@ -131,7 +131,7 @@
                 </td>
                 <td>
                 </td>
-                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
             </tr>
             {% endfor %}
             {% elif prop.get('inexclusive_links') %}
@@ -157,7 +157,7 @@
                 </td>
                 <td>
                 </td>
-                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
             </tr>
             {% endfor %}
             {% elif prop.get('links') %}
@@ -183,7 +183,7 @@
                 </td>
                 <td>
                 </td>
-                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide()"></td>
+                <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
             </tr>
             {% endfor %}
             {% else %}
@@ -210,24 +210,21 @@
               <td></td>
               <td></td>
               <td>
-                <input type="button" value="Undo" class="btn btn-info" onclick="$(this).parents('table').find('tr').show()">
+                <input type="button" value="Undo" class="btn btn-info" onclick="$(this).parents('table').find('tr').show('slow')">
               </td>
             </tr>
           </table>
-        </div>
-        {% endfor %}
-        <div id="Submit" class="container tab-pane fade"><br>
-          <table class="table table-sm" id="table-Submit">
-            <tr style="display:none" id="tbd_header">
+          <table class="table table-sm toggle_table" id="table-{{ node }}-tbd">
+            <tr>
               <th>Required for <code>to_be_deleted.yaml</code> </th>
               <th>Selections</th>
               <th></th>
             </tr>
-            <tr style="display:none" id="tbd_id_type">
-              <td class="align-middle"><label for="tbd_id_type"><kbd>id_type</kbd></label></td>
+            <tr>
+              <td class="align-middle"><label for="tbd_{{ node }}_id_type"><kbd>id_type</kbd></label></td>
               <td>
               <div class="form-group">
-                <select name="tbd_id_type" class="form-control js-example-basic-single" style="width: 100%">
+                <select name="tbd_{{ node }}_id_type" class="form-control js-example-basic-single" style="width: 100%">
                   <option disabled value="" selected>...</option>
                   <option value="id">id</option>
                   <option value="submitter_id">submitter_id</option>
@@ -236,11 +233,11 @@
               </td>
               <td></td>
             </tr>
-            <tr style="display:none" id="tbd_source_field">
-              <td class="align-middle"><label for="tbd_source_field"><kbd>source_field</kbd></label></td>
+            <tr>
+              <td class="align-middle"><label for="tbd_{{ node }}_source_field"><kbd>source_field</kbd></label></td>
               <td>
               <div class="form-group">
-                <select name="tbd_source_field" class="form-control js-example-basic-single" style="width: 100%">
+                <select name="tbd_{{ node }}_source_field" class="form-control js-example-basic-single" style="width: 100%">
                   <option disabled value="" selected>...</option>
                   <option value="not_defined">not_defined</option>
                   {% set fieldList = header.split('\t') %}
@@ -253,10 +250,11 @@
               <td></td>
             </tr>
             </table>
-            <input type="checkbox" id="myCheck" onclick="checkdisplay()"> Create "to_be_deleted.yaml"</input>
-            <br><br>
+            <input type="button" value="Create 'to_be_deleted.yaml'" class="btn btn-info toggle-tbd">
+        </div>
+        {% endfor %}
+        <div id="Submit" class="container tab-pane fade"><br>
             <input type="submit" value="Map" class="btn btn-outline-info">
-          </table>
         </div>
       </div>
     </div>
@@ -269,23 +267,11 @@
   <button type="button" class="btn btn-outline-primary" disabled>Check & Download</button>
 </div>
 <script>
-$(document).ready(function() {
-    $('.js-example-basic-single').select2();
+$(document).ready(function(){
+  $('.toggle_table').hide();
 });
-function checkdisplay() {
-    var checkBox = document.getElementById("myCheck");
-    var Row0 = document.getElementById("tbd_header")
-    var Row1 = document.getElementById("tbd_id_type");
-    var Row2 = document.getElementById("tbd_source_field");
-    if (checkBox.checked == true){
-        Row0.style.display = "table-row";
-        Row1.style.display = "table-row";
-        Row2.style.display = "table-row";
-    } else {
-       Row0.style.display = "none";
-       Row1.style.display = "none";
-       Row2.style.display = "none";
-    }
-}
+$('.toggle-tbd').click(function(){
+    $('.toggle_table').toggle("slow");
+});
 </script>
 {% endblock %}
