@@ -55,14 +55,15 @@ def output(snodes):
     user_dict = request.form.to_dict()
     snode_list = snodes.split('&')
     mapper = output_utils.Mapping(user_dict)
-    sprop = submission.get_node_json(snodes)['properties']
-    yaml_str = output_utils.get_style(mapper.get_yaml_string("", sprop, snodes))
-    conf_str = output_utils.get_style(mapper.get_conf_string(snodes))
-    if mapper.get_dict_for_delete_yaml():
-        tbd_str = output_utils.get_style(mapper.get_tbd_string(snodes))
-    else: tbd_str = ""
-    return render_template('output.html', snodes=snodes, yaml_data=yaml_str, \
-                           conf_data=conf_str, to_be_deleted=tbd_str)
+    all_yaml_dict = {}
+    for node in snode_list:
+        sprop = submission.get_node_json(node)['properties']
+        yaml_str = output_utils.get_style(mapper.get_yaml_string("", sprop, node))
+        all_yaml_dict[node] = yaml_str
+    conf_str = output_utils.get_style(mapper.get_conf_string(snode_list))
+    to_be_deleted_str = output_utils.get_style(mapper.get_tbd_string(snode_list))
+    return render_template('output.html', all_yaml_dict=all_yaml_dict, \
+                            conf_data=conf_str, to_be_deleted_data=to_be_deleted_str)
 
 if __name__ == '__main__':
     app.secret_key = uuid.uuid4().hex
