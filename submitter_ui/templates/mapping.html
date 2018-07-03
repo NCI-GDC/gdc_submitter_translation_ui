@@ -3,289 +3,280 @@
 
 {% block body %}
 <div class="jumbotron text-left">
-  <form action="{{ url_for('output', snode=selected_node) }}" method="POST">
-    <table class="table table-sm" id="mappingTable">
-      <tr>
-        <th>Required for <code>{{ selected_node }}</code> :</th>
-        <th>Header from your input</th>
-        <th>Choose default value</th>
-      </tr>
-      {% if required_list %}
-      {% for rk in required_list %}
-      <tr>
-          <td class="align-middle"><label for="{{ rk }}"><kbd>{{ rk }}</kbd></label></td>
-          <td>
-            <div class="form-group">
-              <select name="{{ rk }}" class="form-control">
-                <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split('\t') %}
-                {% for field in fieldList %}
-                <option value="{{ field }}">{{ field }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </td>
-          <td>
-            <div class="form-group">
-              {% for key, value in enum.items() %}
-                {% if rk == key %}
-                  <select class="form-control" name="default_{{ rk }}">
+  <form action="{{ url_for('output', snodes=snodes) }}" method="POST" id="user_form">
+    <div class="container">
+      <!-- Nav tabs -->
+      <ul class="nav nav-pills" role="tablist">
+        {% for node in nodes_dict.keys() %}
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="pill" href="#{{ node }}"><code>{{ node }}</code></a>
+        </li>
+        {% endfor %}
+        <li>
+          <a class="nav-link" data-toggle="pill" href="#Submit"><code>Submit</code></a>
+        </li>
+      </ul>
+      <!-- Tab panes -->
+      <div class="tab-content">
+        {% for node, prop in nodes_dict.items() %}
+        <div id="{{ node }}" class="container tab-pane fade"><br>
+          <table class="table table-sm" id="table-{{ node }}">
+            <tr>
+              <th>Required for <code>{{ node }}</code> :</th>
+              <th>Header from your input</th>
+              <th>Choose default value</th>
+            </tr>
+            {% if prop.get('required') %}
+            {% for rk in prop['required'] %}
+            <tr>
+              <td class="align-middle"><label for="{{ node }}_{{ rk }}"><kbd>{{ rk }}</kbd></label></td>
+              <td>
+                <div class="form-group">
+                  <select name="{{ node }}_{{ rk }}" class="form-control">
                     <option value="not_defined">not_defined</option>
-                    {% for v in value %}
-                    <option value="{{ v }}">{{ v }}</option>
+                    {% set fieldList = header.split('\t') %}
+                    {% for field in fieldList %}
+                    <option value="{{ field }}">{{ field }}</option>
                     {% endfor %}
                   </select>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </td>
-      </tr>
-      {% endfor %}
-      {% else %}
-      {% endif %}
-      {% if optional_list %}
-      <tr>
-        <th>Optional for <code>{{ selected_node }}</code> :</th>
-        <th></th>
-        <th></th>
-      </tr>
-      {% for ok in optional_list %}
-      <tr>
-          <td class="align-middle"><label for="{{ ok }}"><kbd>{{ ok }}</kbd></label></td>
-          <td>
-            <div class="form-group">
-              <select name="{{ ok }}" class="form-control">
-                <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split('\t') %}
-                {% for field in fieldList %}
-                <option value="{{ field }}">{{ field }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </td>
-          <td>
-            <div class="form-group">
-              {% for key, value in enum.items() %}
-                {% if ok == key %}
-                  <select class="form-control" name="default_{{ ok }}">
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  {% for key, value in prop['enums'].items() %}
+                    {% if rk == key %}
+                      <select class="form-control" name="{{ node }}_default_{{ rk }}">
+                        <option value="not_defined">not_defined</option>
+                        {% for v in value %}
+                        <option value="{{ v }}">{{ v }}</option>
+                        {% endfor %}
+                      </select>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            {% endif %}
+            {% if prop.get('optional') %}
+            <tr>
+              <th>Optional for <code>{{ node }}</code> :</th>
+              <th></th>
+              <th></th>
+            </tr>
+            {% for ok in prop['optional'] %}
+            <tr>
+              <td class="align-middle"><label for="{{ node }}_{{ ok }}"><kbd>{{ ok }}</kbd></label></td>
+              <td>
+                <div class="form-group">
+                  <select name="{{ node }}_{{ ok }}" class="form-control">
+                    <option disabled selected value="">...</option>
                     <option value="not_defined">not_defined</option>
-                    {% for v in value %}
-                    <option value="{{ v }}">{{ v }}</option>
+                    {% set fieldList = header.split('\t') %}
+                    {% for field in fieldList %}
+                    <option value="{{ field }}">{{ field }}</option>
                     {% endfor %}
                   </select>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </td>
-          <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
-      </tr>
-      {% endfor %}
-      {% else %}
-      {% endif %}
-      {% if exclusive_list %}
-      <tr>
-        <th>Exclusive links for <code>{{ selected_node }}</code> :</th>
-        <th></th>
-        <th></th>
-      </tr>
-      {% for ek in exclusive_list %}
-      <tr>
-          <td>
-            <div class="form-group">
-              <select name="link_exclusive_field_{{ loop.index }}" class="form-control">
-                {% for field in ek %}
-                <option value="{{ field }}">{{ field }}</option>
-                {% endfor %}
-              </select>
-          </td>
-          <td>
-            <div class="form-group">
-              <select name="link_exclusive_chosen_{{ loop.index }}" class="form-control">
-                <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split('\t') %}
-                {% for field in fieldList %}
-                <option value="{{ field }}">{{ field }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </td>
-          <td>
-            <div class="form-group">
-              {% for key, value in enum.items() %}
-                {% if ek == key %}
-                  <select class="form-control" name="default_{{ ek }}">
-                    <option value="not_defined">not_defined</option>
-                    {% for v in value %}
-                    <option value="{{ v }}">{{ v }}</option>
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  {% for key, value in prop['enums'].items() %}
+                    {% if ok == key %}
+                      <select class="form-control" name="{{ node }}_default_{{ ok }}">
+                        <option selected value="">select default</option>
+                        <option value="not_defined">not_defined</option>
+                        {% for v in value %}
+                        <option value="{{ v }}">{{ v }}</option>
+                        {% endfor %}
+                      </select>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </td>
+              <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            {% endif %}
+            {% if prop.get('exclusive_links') %}
+            <tr>
+              <th>Exclusive links for <code>{{ node }}</code> :</th>
+              <th></th>
+              <th></th>
+            </tr>
+            {% for ek in prop['exclusive_links'] %}
+            <tr>
+              <td>
+                <div class="form-group">
+                  <select name="link_{{ node }}_exclusive_field_{{ loop.index }}" class="form-control">
+                    {% for field in ek %}
+                    <option value="{{ field }}">{{ field }}</option>
                     {% endfor %}
                   </select>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </td>
-          <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
-      </tr>
-      {% endfor %}
-      {% elif inexclusive_list %}
-      <tr>
-        <th>Links for <code>{{ selected_node }}</code> :</th>
-        <th></th>
-        <th></th>
-      </tr>
-      {% for ik in inexclusive_list %}
-      <tr>
-          <td class="align-middle"><label for="link_{{ ik }}"><kbd>{{ ik }}</kbd></label></td>
-          <td>
-            <div class="form-group">
-              <select name="link_{{ ik }}" class="form-control">
-                <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split('\t') %}
-                {% for field in fieldList %}
-                <option value="{{ field }}">{{ field }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </td>
-          <td>
-            <div class="form-group">
-              {% for key, value in enum.items() %}
-                {% if ik == key %}
-                  <select class="form-control" name="default_{{ ik }}">
+                </div>
+              </td>
+              <td>
+                <div class="form-group">
+                  <select name="link_{{ node }}_exclusive_chosen_{{ loop.index }}" class="form-control">
+                    <option disabled selected value="">...</option>
                     <option value="not_defined">not_defined</option>
-                    {% for v in value %}
-                    <option value="{{ v }}">{{ v }}</option>
+                    {% set fieldList = header.split('\t') %}
+                    {% for field in fieldList %}
+                    <option value="{{ field }}">{{ field }}</option>
                     {% endfor %}
                   </select>
-                {% endif %}
-              {% endfor %}
-            </div>
-          </td>
-          <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
-      </tr>
-      {% endfor %}
-      {% elif link_list %}
-      <tr>
-        <th>Links for <code>{{ selected_node }}</code> :</th>
-        <th></th>
-        <th></th>
-      </tr>
-      {% for lk in link_list %}
-      <tr>
-          <td class="align-middle"><label for="link_{{ lk }}"><kbd>{{ lk }}</kbd></label></td>
-          <td>
-            <div class="form-group">
-              <select name="link_{{ lk }}" class="form-control">
-                <option value="not_defined">not_defined</option>
-                {% set fieldList = header.split('\t') %}
-                {% for field in fieldList %}
-                <option value="{{ field }}">{{ field }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </td>
-          <td>
-            <div class="form-group">
-              {% for key, value in enum.items() %}
-                {% if lk == key %}
-                  <select class="form-control" name="default_{{ lk }}">
+                </div>
+              </td>
+              <td>
+              </td>
+              <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
+            </tr>
+            {% endfor %}
+            {% elif prop.get('inexclusive_links') %}
+            <tr>
+              <th>Links for <code>{{ node }}</code> :</th>
+              <th></th>
+              <th></th>
+            </tr>
+            {% for ik in prop['inexclusive_links'] %}
+            <tr>
+              <td class="align-middle"><label for="link_{{ node }}_{{ ik }}"><kbd>{{ ik }}</kbd></label></td>
+              <td>
+                <div class="form-group">
+                  <select name="link_{{ node }}_{{ ik }}" class="form-control">
+                    <option disabled selected value="">...</option>
                     <option value="not_defined">not_defined</option>
-                    {% for v in value %}
-                    <option value="{{ v }}">{{ v }}</option>
+                    {% set fieldList = header.split('\t') %}
+                    {% for field in fieldList %}
+                    <option value="{{ field }}">{{ field }}</option>
                     {% endfor %}
                   </select>
-                {% endif %}
-              {% endfor %}
+                </div>
+              </td>
+              <td>
+              </td>
+              <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
+            </tr>
+            {% endfor %}
+            {% elif prop.get('links') %}
+            <tr>
+              <th>Links for <code>{{ node }}</code> :</th>
+              <th></th>
+              <th></th>
+            </tr>
+            {% for lk in prop['links'] %}
+            <tr>
+              <td class="align-middle"><label for="link_{{ node }}_{{ lk }}"><kbd>{{ lk }}</kbd></label></td>
+              <td>
+                <div class="form-group">
+                  <select name="link_{{ node }}_{{ lk }}" class="form-control">
+                    <option disabled selected value="">...</option>
+                    <option value="not_defined">not_defined</option>
+                    {% set fieldList = header.split('\t') %}
+                    {% for field in fieldList %}
+                    <option value="{{ field }}">{{ field }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </td>
+              <td>
+              </td>
+              <td><input type="button" value="Delete" class="btn btn-danger" onclick="$(this).closest('tr').hide('slow')"></td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            {% endif %}
+            <tr>
+              <th>Config options:</th>
+              <th>ID type</th>
+              <th></th>
+            </tr>
+            <tr>
+              <td class="align-middle"><label for="link_{{ node }}_id_type"><kbd>link_id_type</kbd></label></td>
+              <td>
+                <div class="form-group">
+                  <select name="link_{{ node }}_id_type" class="form-control">
+                    <option value="id">id</option>
+                    <option value="submitter_id">submitter_id</option>
+                  </select>
+                </div>
+              </td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                <input type="button" value="Undo" class="btn btn-info" onclick="$(this).parents('table').find('tr').show('slow')">
+              </td>
+            </tr>
+          </table>
+          <table class="table table-sm toggle_table" id="table-{{ node }}-tbd">
+            <tr>
+              <th>Required for <code>to_be_deleted.yaml</code> </th>
+              <th>Selections</th>
+              <th>&nbsp</th>
+              <th>&nbsp</th>
+            </tr>
+            <tr>
+              <td class="align-middle"><label for="tbd_{{ node }}_id_type"><kbd>id_type</kbd></label></td>
+              <td>
+                <div class="form-group">
+                  <select name="tbd_{{ node }}_id_type" class="form-control">
+                    <option disabled selected value="">...</option>
+                    <option value="id">id</option>
+                    <option value="submitter_id">submitter_id</option>
+                  </select>
+                </div>
+              </td>
+              <td style="width: 30%"><div>&nbsp;</div></td>
+            </tr>
+            <tr>
+              <td class="align-middle"><label for="tbd_{{ node }}_source_field"><kbd>source_field</kbd></label></td>
+              <td>
+                <div class="form-group">
+                  <select name="tbd_{{ node }}_source_field" class="form-control">
+                    <option disabled selected value="">...</option>
+                    <option value="not_defined">not_defined</option>
+                    {% set fieldList = header.split('\t') %}
+                    {% for field in fieldList %}
+                    <option value="{{ field }}">{{ field }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </td>
+              <td style="width: 30%"><div>&nbsp;</div></td>
+            </tr>
+            </table>
+            <div class="row justify-content-md-center">
+              <input type="button" value="Create 'to_be_deleted.yaml'" class="btn btn-info" id="toggle-{{ node }}-tbd">
             </div>
-          </td>
-          <td><input type="button" value="Delete" onclick="deleteRow(this)" class="btn btn-danger"></td>
-      </tr>
-      {% endfor %}
-      {% else %}
-      {% endif %}
-      <tr>
-        <th>Config options:</th>
-        <th>ID type</th>
-        <th></th>
-      </tr>
-      <tr>
-          <td class="align-middle"><label for="link_id_type"><kbd>link_id_type</kbd></label></td>
-          <td>
-            <div class="form-group">
-              <select name="link_id_type" class="form-control">
-                <option value="id">id</option>
-                <option value="submitter_id">submitter_id</option>
-              </select>
-            </div>
-          </td>
-          <td></td>
-      </tr>
-      <tr style="display:none" id="tbd_header">
-        <th>Required for <code>to_be_deleted.yaml</code> </th>
-        <th>Selections</th>
-        <th></th>
-      </tr>
-      <tr style="display:none" id="tbd_id_type">
-        <td class="align-middle"><label for="tbd_id_type"><kbd>id_type</kbd></label></td>
-        <td>
-          <div class="form-group">
-            <select name="tbd_id_type" class="form-control">
-              <option disabled value="" selected>...</option>
-              <option value="id">id</option>
-              <option value="submitter_id">submitter_id</option>
-            </select>
+            <script>
+            $(document).ready(function(){
+              $("#table-{{ node }}-tbd").hide();
+            });
+            $("#toggle-{{ node }}-tbd").click(function(){
+                $("#table-{{ node }}-tbd").toggle("slow");
+            });
+            </script>
+        </div>
+        {% endfor %}
+        <div id="Submit" class="container tab-pane fade"><br>
+          <div class="row justify-content-md-center">
+            <input type="submit" value="&nbsp;&nbsp;&nbsp;Map&nbsp;&nbsp;&nbsp;" class="btn btn-info">
           </div>
-        </td>
-        <td></td>
-      </tr>
-      <tr style="display:none" id="tbd_source_field">
-        <td class="align-middle"><label for="tbd_source_field"><kbd>source_field</kbd></label></td>
-        <td>
-          <div class="form-group">
-            <select name="tbd_source_field" class="form-control">
-              <option disabled value="" selected>...</option>
-              <option value="not_defined">not_defined</option>
-              {% set fieldList = header.split('\t') %}
-              {% for field in fieldList %}
-              <option value="{{ field }}">{{ field }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </td>
-        <td></td>
-      </tr>
-    </table>
-    <input type="checkbox" id="myCheck" onclick="checkdisplay()"> Create "to_be_deleted.yaml"</input>
-    <br>
-    <br>
-    <input type="submit" value="Map" class="btn btn-outline-info">
+        </div>
+      </div>
+    </div>
   </form>
 </div>
-<br>
-<br>
+
 <div class="btn-group btn-group-justified fixed-bottom">
   <a href="/upload" class="btn btn-outline-success">Select & Upload</a>
   <button type="button" class="btn btn-info btn-block">Select & Map</button>
   <button type="button" class="btn btn-outline-primary" disabled>Check & Download</button>
 </div>
-<script>
-function deleteRow(r) {
-    var i = r.parentNode.parentNode.rowIndex;
-    document.getElementById("mappingTable").deleteRow(i);
-}
-function checkdisplay() {
-    var checkBox = document.getElementById("myCheck");
-    var Row0 = document.getElementById("tbd_header")
-    var Row1 = document.getElementById("tbd_id_type");
-    var Row2 = document.getElementById("tbd_source_field");
-    if (checkBox.checked == true){
-        Row0.style.display = "table-row";
-        Row1.style.display = "table-row";
-        Row2.style.display = "table-row";
-    } else {
-       Row0.style.display = "none";
-       Row1.style.display = "none";
-       Row2.style.display = "none";
-    }
-}
-</script>
 {% endblock %}

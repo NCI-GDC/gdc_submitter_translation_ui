@@ -36,35 +36,34 @@ def upload():
 @app.route('/mapping', methods=['GET', 'POST'])
 def mapping():
     '''select fields'''
-    snode = str(request.form.get('comp_select'))
-    rqlist, oplist, eclist, ielist, llist = submission.get_fields(snode)
-    enum = submission.get_enum(snode)
-    file = request.files['uploadFile']
-    if input_utils.file_extention(file.filename) == 'tsv':
-        header = file.read().decode("utf-8").strip().split('\n')[0]
-        flash('File uploaded, you have selected \"{}\"'.format(snode), 'success')
+    snodes = request.form.getlist('comp_select[]')
+    nodes_str = '&'.join(snodes)
+    sdict = submission.get_nodes_dict(snodes)
+    ufile = request.files['uploadFile']
+    if input_utils.file_extention(ufile.filename) == 'tsv':
+        header = ufile.read().decode("utf-8").strip().split('\n')[0]
+        flash('File uploaded, you have selected {}'\
+             .format([x.encode('ascii', 'ignore') for x in snodes]), 'success')
     else:
         flash('Not a valid file format', 'danger')
-        return render_template('mapping.html', header="", \
-               selected_node=snode, required_list=[], optional_list=[], \
-               exclusive_list=[], inexclusive_list=[], link_list=[], enum={})
-    return render_template('mapping.html', header=header, \
-           selected_node=snode, required_list=rqlist, optional_list=oplist, \
-           exclusive_list=eclist, inexclusive_list=ielist, link_list=llist, enum=enum)
+        return render_template('mapping.html', header="", nodes_dict=sdict, snodes=nodes_str)
+    return render_template('mapping.html', header=header, nodes_dict=sdict, snodes=nodes_str)
 
-@app.route('/output/<snode>', methods=['GET', 'POST'])
-def output(snode):
+@app.route('/output/<snodes>', methods=['GET', 'POST'])
+def output(snodes):
     '''preview/download outputs'''
     user_dict = request.form.to_dict()
-    sprop = submission.get_node_json(snode)['properties']
+    snode_list = snodes.split('&')
     mapper = output_utils.Mapping(user_dict)
-    yaml_str = output_utils.get_style(mapper.get_yaml_string("", sprop, snode))
-    conf_str = output_utils.get_style(mapper.get_conf_string(snode))
-    if mapper.get_dict_for_delete_yaml():
-        tbd_str = output_utils.get_style(mapper.get_tbd_string(snode))
-    else: tbd_str = ""
-    return render_template('output.html', snode=snode, yaml_data=yaml_str, \
-                           conf_data=conf_str, to_be_deleted=tbd_str)
+    all_yaml_dict = {}
+    for node in snode_list:
+        sprop = submission.get_node_json(node)['properties']
+        yaml_str = output_utils.get_style(mapper.get_yaml_string("", sprop, node))
+        all_yaml_dict[node] = yaml_str
+    conf_str = output_utils.get_style(mapper.get_conf_string(snode_list))
+    to_be_deleted_str = output_utils.get_style(mapper.get_tbd_string(snode_list))
+    return render_template('output.html', all_yaml_dict=all_yaml_dict, \
+                            conf_data=conf_str, to_be_deleted_data=to_be_deleted_str)
 
 if __name__ == '__main__':
     app.secret_key = uuid.uuid4().hex

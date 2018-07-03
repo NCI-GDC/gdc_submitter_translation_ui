@@ -2,50 +2,66 @@
 
 {% block body %}
 <div class="jumbotron text-left">
-  <div class="form-group">
-    <label for="inputYamlToSave">Preview output .yaml</label>
-    <textarea id="inputYamlToSave" class="form-control" rows="10">{{ yaml_data }}</textarea>
-    <br>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <button onclick="saveTextAsFile('inputYamlToSave', 'inputYamlNameToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
+  <div class="container">
+    <ul class="nav nav-pills" role="tablist">
+      {% for node in all_yaml_dict.keys() %}
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="pill" href="#{{ node }}"><code>{{ node }}.yaml</code></a>
+      </li>
+      {% endfor %}
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="pill" href="#config"><code>task.conf</code></a>
+      </li>
+      {% if to_be_deleted_data %}
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="pill" href="#to_be_deleted"><code>to_be_deleted.yaml</code></a>
+      </li>
+      {% else %}
+      {% endif %}
+    </ul>
+    <div class="tab-content">
+      {% for node, yaml_data in all_yaml_dict.items() %}
+      <div id="{{ node }}" class="form-group container tab-pane fade"><br>
+        <label for="{{ node }}_YamlToSave">Preview:</label>
+        <textarea id="{{ node }}_YamlToSave" class="form-control" rows="10">{{ yaml_data }}</textarea>
+        <br>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <button onclick="saveTextAsFile('{{ node }}_YamlToSave', '{{ node }}_YamlNameToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
+          </div>
+          <input id="{{ node }}_YamlNameToSaveAs" type="text" class="form-control" value="{{ node }}.yaml" aria-label="{{ node }}.yaml" aria-describedby="basic-addon2">
+        </div>
       </div>
-      <input id="inputYamlNameToSaveAs" type="text" class="form-control" value="{{ snode }}.yaml" aria-label="{{ snode }}.yaml" aria-describedby="basic-addon2">
+      {% endfor %}
+      <div id="config" class="form-group container tab-pane fade">
+        <label for="ConfigToSave">Preview:</label>
+        <textarea id="ConfigToSave" class="form-control" rows="10">{{ conf_data }}</textarea>
+        <br>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <button onclick="saveTextAsFile('ConfigToSave', 'ConfigNameToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
+          </div>
+          <input id="ConfigNameToSaveAs" type="text" class="form-control" value="task.conf" aria-label="task.conf" aria-describedby="basic-addon2">
+        </div>
+      </div>
+      {% if to_be_deleted_data %}
+      <div id="to_be_deleted" class="form-group container tab-pane fade">
+        <label for="ToBeDeletedToSave">Preview to_be_deleted.yaml</label>
+        <textarea id="ToBeDeletedToSave" class="form-control" rows="10">{{ to_be_deleted_data }}</textarea>
+        <br>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <button onclick="saveTextAsFile('ToBeDeletedToSave', 'ToBeDeletedToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
+          </div>
+          <input id="ToBeDeletedToSaveAs" type="text" class="form-control" value="to_be_deleted.yaml" aria-label="to_be_deleted.yaml" aria-describedby="basic-addon2">
+        </div>
+      </div>
+      {% else %}
+      {% endif %}
     </div>
   </div>
 </div>
 <br>
-<div class="jumbotron text-left">
-  <div class="form-group">
-    <label for="inputConfToSave">Preview output .conf</label>
-    <textarea id="inputConfToSave" class="form-control" rows="10">{{ conf_data }}</textarea>
-    <br>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <button onclick="saveTextAsFile('inputConfToSave', 'inputConfNameToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
-      </div>
-      <input id="inputConfNameToSaveAs" type="text" class="form-control" value="{{ snode }}.conf" aria-label="{{ snode }}.conf" aria-describedby="basic-addon2">
-    </div>
-  </div>
-</div>
-<br>
-{% if to_be_deleted %}
-<div class="jumbotron text-left">
-  <div class="form-group">
-    <label for="ToBeDeletedToSave">Preview to_be_deleted.yaml</label>
-    <textarea id="ToBeDeletedToSave" class="form-control" rows="10">{{ to_be_deleted }}</textarea>
-    <br>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <button onclick="saveTextAsFile('ToBeDeletedToSave', 'ToBeDeletedToSaveAs')" class="btn btn-outline-primary" type="button">Download</button>
-      </div>
-      <input id="ToBeDeletedToSaveAs" type="text" class="form-control" value="to_be_deleted.yaml" aria-label="to_be_deleted.yaml" aria-describedby="basic-addon2">
-    </div>
-  </div>
-</div>
-<br>
-{% else %}
-{% endif %}
 <div class="btn-group btn-group-justified fixed-bottom">
   <a href="/upload" class="btn btn-outline-success">Select & Upload</a>
   <button type="button" class="btn btn-outline-info" disabled>Select & Map</button>

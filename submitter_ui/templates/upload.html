@@ -4,17 +4,27 @@
 <div class="jumbotron text-left">
   <form class="form-group" method="POST" enctype="multipart/form-data" action="{{ url_for('mapping') }}">
     <label for="comp_select">Select desired node type</label>
-    <select name="comp_select" class="form-control">
+    <br>
+    <select name="comp_select[]" class="js-stats form-control" multiple="multiple" style="width: 100%">
       {% for key in node_list %}
       <option value="{{ key }}">{{ key }}</option>
       {% endfor %}
     </select>
+    <script>
+      $(document).ready(function() {
+          $('.js-stats').select2({
+            placeholder: "Type to select ...",
+            allowClear: true
+          });
+      });
+    </script>
+    <br>
     <br>
     <label for="uploadFile">Upload your local input</label>
-      <div class="custom-file" id="uploadFile" lang="es">
-          <input name="uploadFile" type="file" class="custom-file-input" id="uploadFile" aria-describedby="fileHelp" onchange="$(this).next().after().text($(this).val().split('\\').slice(-1)[0])" required>
-          <label class="custom-file-label" for="uploadFile">Select your file...</label>
-      </div>
+    <div class="custom-file" id="uploadFile" lang="es">
+      <input name="uploadFile" type="file" class="custom-file-input" id="uploadFile" aria-describedby="fileHelp" onchange="$(this).next().after().text($(this).val().split('\\').slice(-1)[0])" required>
+      <label class="custom-file-label" for="uploadFile">Select your file...</label>
+    </div>
     <small id="fileHelp" class="form-text text-muted text-right">Only .tsv file is allowed.</small>
     <input type="submit" value="Upload" class="btn btn-outline-success">
   </form>
